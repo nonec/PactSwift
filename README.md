@@ -3,7 +3,8 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)][license]
 [![PRs Welcome!](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)][contributing]
 ![Release: pre-BETA](https://img.shields.io/badge/Release-BETA-orange)
-[![Test - Xcode (latest)](https://github.com/surpher/pact-swift/workflows/Test%20-%20latest/badge.svg?branch=feature%2Fintentional_swiftlint_warning)](https://github.com/surpher/pact-swift/actions)
+![Test - Xcode (default)](https://github.com/surpher/PactSwift/workflows/Test%20-%20Xcode%20(default)/badge.svg)
+![Test - Xcode (11.5-beta)](https://github.com/surpher/PactSwift/workflows/Test%20-%20Xcode%20(11.5-beta)/badge.svg)
 ![Test - Xcode (11.3.1)](https://github.com/surpher/pact-swift/workflows/Test%20-%20Xcode%20(11.3.1)/badge.svg)
 
 ⚠️ **Note:** _pact-swift_ is under heavy development and not all features are complete. Not everything is documented properly.
@@ -28,29 +29,27 @@ carthage update --platform ios --no-use-binaries
 
 ### Swift Package Manager (beta)
 
-1. Add `PactSwift` as a dependency to your test target in `Package.swift`:
+Add `PactSwift` as a dependency to your test target in `Package.swift`:
 
-	```sh
-	...
-	dependencies: [
-		.package(url: "https://github.com/surpher/PactSwift.git", .branch("master"))
-	],
-	...
-	```
+```sh
+...
+dependencies: [
+	.package(url: "https://github.com/surpher/PactSwift.git", .branch("master"))
+],
+...
+```
 
-2. Download `libpact_mock_server.a` from [PactMockServer](https://github.com/surpher/PactMockServer/tree/master/Sources/lib) and add it to your project (eg: `Project/ProjectTests/lib/`). You can compile your own from [pact_mock_server_ffi](https://github.com/pact-foundation/pact-reference/tree/master/rust/pact_mock_server_ffi).
-3. Write tests in `Project/ProjectTests/test_case.swift`
-4. Run tests in terminal by providing path to binary lib as a linker flag: `swift test -Xlinker -LProjectTests/lib`
+Run tests in terminal by providing path to static lib as a linker flag:
+
+    swift test -Xlinker -LRelativePathTo/libFolder
 
 ⚠️ **Note:** ⚠️
 
-Using `PactSwift` through SPM requires you to download `libpact_mock_server.a` for the appropriate architecture.
+Using `PactSwift` through SPM requires you to link a `libpact_mock_server.a` for the appropriate architecture. You can find them in `/Resources/` folder.
 
-You can download one build for `x86_64` and `aarch64` at [PactMockServer](https://github.com/surpher/PactMockServer/tree/master/Sources/lib). You can use it to build for `darwin` but it will throw `ld:warning`. A _fat_ framework that would include all three architectures is being prepared.
+You can compile a custom lib from [pact-reference/rust](https://github.com/pact-foundation/pact-reference/tree/master/rust/pact_mock_server_ffi) codebase.
 
-You can compile a custom one from [pact-reference/rust](https://github.com/pact-foundation/pact-reference/tree/master/rust/pact_mock_server_ffi).
-
-We're actively looking for an alternative approach to using static libs with SPM!
+⚠️ We're actively looking for an alternative approach to using static libs with SPM!
 
 ## Xcode setup - Carthage
 
@@ -80,6 +79,8 @@ In your test targets build settings, update `Runpath Search Paths` configuration
 #### Destination dir (recommended)
 
 Edit your scheme and add `PACT_DIR` environment variable (`Run` step) with path to the directory you want your Pact contracts to be written to. By default, Pact contracts are written to `/tmp/pacts`.
+
+⚠️ Sandboxed apps are limited in where they can write the Pact contract file. The default location is the `Documents` folder in the sandbox (eg: `~/Library/Containers/com.example.project-name/Data/Documents`) and *can not* be overriden by the environment variable `PACT_DIR`.
 
 ![destination_dir](./Documentation/images/04_destination_dir.png)
 
